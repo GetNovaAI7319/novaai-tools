@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaAI Tools</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:white}
+header{text-align:center;padding:25px 15px;background:#151b35}
+header h1{color:#a78bfa;font-size:32px;margin:5px}
+header p{color:#cbd5e1}
+.hero{text-align:center;padding:45px 15px 25px}
+.hero h2{font-size:30px}
+.hero p{color:#cbd5e1;line-height:1.6}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px;max-width:750px;margin:auto}
+.card{background:#171f38;border:1px solid #303b5e;border-radius:15px;padding:20px 12px;text-align:center}
+.card h3{color:#c4b5fd}
+.card p{font-size:14px;color:#cbd5e1}
+button,.upload{background:#7c3aed;color:white;border:0;border-radius:9px;padding:12px;display:inline-block;cursor:pointer;font-size:14px}
+input{max-width:100%;margin:10px 0}
+#preview{max-width:100%;margin-top:15px;border-radius:10px}
+footer{text-align:center;padding:25px;color:#94a3b8}
+@media(max-width:380px){.tools{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>✨ NovaAI Tools</h1>
+<p>Your Smart Creative World</p>
+</header>
+
+<section class="hero">
+<h2>Welcome to NovaAI 🚀</h2>
+<p>Simple and useful creative tools, all in one place.</p>
+</section>
+
+<section class="tools">
+<div class="card">
+<h3>📸 Image Preview</h3>
+<p>Choose an image and preview it.</p>
+<input type="file" id="imageInput" accept="image/*">
+<img id="preview" alt="Your image preview" hidden>
+</div>
+
+<div class="card">
+<h3>🔍 Image Resizer</h3>
+<p>Resize an image in your browser.</p>
+<input type="file" id="resizeInput" accept="image/*">
+<br>
+<label>Width (px): <input type="number" id="width" value="800" min="1" max="5000"></label>
+<br>
+<button onclick="resizeImage()">Resize Image</button>
+<br>
+<a id="download" hidden style="color:#c4b5fd;margin-top:15px;display:inline-block">Download resized image</a>
+</div>
+
+<div class="card">
+<h3>✍️ Text Counter</h3>
+<p>Count words and characters.</p>
+<textarea id="textInput" rows="4" placeholder="Type your text here..." style="width:100%;padding:10px;border-radius:8px"></textarea>
+<p id="count">Words: 0 | Characters: 0</p>
+</div>
+
+<div class="card">
+<h3>🌐 About NovaAI</h3>
+<p>More creative tools are coming soon. Explore and create!</p>
+</div>
+</section>
+
+<footer>© 2026 NovaAI Tools | Made with ❤️</footer>
+
+<script>
+const imageInput=document.getElementById('imageInput');
+imageInput.addEventListener('change',function(){
+const file=this.files[0];
+if(file){
+const preview=document.getElementById('preview');
+preview.src=URL.createObjectURL(file);
+preview.hidden=false;
+}
+});
+
+document.getElementById('textInput').addEventListener('input',function(){
+const text=this.value.trim();
+const words=text?text.split(/\s+/).length:0;
+document.getElementById('count').textContent='Words: '+words+' | Characters: '+this.value.length;
+});
+
+function resizeImage(){
+const file=document.getElementById('resizeInput').files[0];
+const width=parseInt(document.getElementById('width').value);
+if(!file||!width||width<1){alert('Choose an image and enter a valid width.');return;}
+const img=new Image();
+img.onload=function(){
+const canvas=document.createElement('canvas');
+canvas.width=width;
+canvas.height=Math.round(img.height*(width/img.width));
+canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+canvas.toBlob(function(blob){
+if(!blob){alert('Could not resize this image.');return;}
+const link=document.getElementById('download');
+if(link.dataset.url)URL.revokeObjectURL(link.dataset.url);
+link.dataset.url=URL.createObjectURL(blob);
+link.href=link.dataset.url;
+link.download='novaai-resized.png';
+link.hidden=false;
+link.textContent='Download resized image';
+},'image/png');
+};
+img.onerror=function(){alert('Could not open this image.');};
+img.src=URL.createObjectURL(file);
+}
+</script>
+</body>
+</html>
